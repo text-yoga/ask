@@ -1,0 +1,29 @@
+{
+  "name": "@text-yoga/ask",
+  "version": "1.0.0",
+  "description": "",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "tsc",
+    "build": "tsc",
+    "build:watch": "tsc --watch"
+  },
+  "main": "dist/index.js",
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@text-yoga/llama": "workspace:*"
+  },
+  "devDependencies": {}
+}

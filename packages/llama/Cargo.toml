@@ -1,0 +1,56 @@
+[package]
+name = "text-yoga-ai"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# App crates.
+anyhow = {version = "1.0.75", features = ["backtrace"]}
+byteorder = "1.5.0"
+# num-traits = {workspace = true}
+# tokenizers = {workspace = true, features = ["unstable_wasm"]}
+
+# anyhow = {workspace = true}
+# byteorder = {workspace = true}
+# log = {workspace = true}
+# rand = {workspace = true}
+# serde = {workspace = true}
+# serde_json = {workspace = true}
+
+candle = { version = "0.3.1", package = "candle-core"}
+candle-nn = { version = "0.3.1"}
+candle-transformers = { version = "0.3.1"}
+
+# Wasm specific crates.
+console_error_panic_hook = "0.1.7"
+getrandom = {version = "0.2", features = ["js"]}
+gloo = "0.8"
+js-sys = "0.3.64"
+log = "0.4.20"
+num-traits = "0.2.17"
+rand = "0.8.5"
+serde = {version = "1.0.193", features = ["derive"]}
+serde_json = "1.0.108"
+tokenizers = { version = "0.15.0", features = ["unstable_wasm"], default-features = false }
+wasm-bindgen = "0.2.87"
+wasm-bindgen-futures = "0.4.37"
+wasm-logger = "0.2"
+yew = {version = "0.20.0", features = ["csr"]}
+yew-agent = "0.2.0"
+
+[dependencies.web-sys]
+features = [
+  'Blob',
+  'Document',
+  'Element',
+  'HtmlElement',
+  'Node',
+  'Window',
+  'Request',
+  'RequestCache',
+  'RequestInit',
+  'RequestMode',
+  'Response',
+  'Performance',
+]
+version = "0.3.64"

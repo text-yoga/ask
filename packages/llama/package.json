@@ -1,0 +1,32 @@
+{
+  "name": "@text-yoga/llama",
+  "version": "1.0.0",
+  "description": "",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/m.js",
+      "types": "./dist/m.d.ts"
+    }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "tsc",
+    "build:watch": "tsc --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@xenova/transformers": "^2.7.0",
+    "fp-ts": "^2.16.1",
+    "lru-cache": "^10.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.10",
+    "react": "^18.2.0"
+  }
+}
