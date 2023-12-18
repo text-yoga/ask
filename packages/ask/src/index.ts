@@ -107,7 +107,6 @@ export async function generate(data: GenerationProps) {
           ((tokensCount + 1) / (performance.now() - startTime)) * 1000;
 
         sentence += token ?? "";
-        console.log(`New sentence: ${sentence}`);
         self.postMessage({
           status: "generating",
           message: "Generating token",
