@@ -26,6 +26,9 @@ importers:
       '@text-yoga/ask':
         specifier: workspace:*
         version: link:../../packages/ask
+      '@text-yoga/ask-react':
+        specifier: workspace:*
+        version: link:../../packages/ask-react
       isbot:
         specifier: latest
         version: 3.7.1
@@ -191,6 +194,28 @@ importers:
       '@text-yoga/llama':
         specifier: workspace:*
         version: link:../llama
+
+  packages/ask-react:
+    dependencies:
+      '@text-yoga/ask':
+        specifier: workspace:*
+        version: link:../ask
+      '@text-yoga/llama':
+        specifier: workspace:*
+        version: link:../llama
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.2.0(react@18.2.0)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.20
+        version: 18.2.37
+      '@types/react-dom':
+        specifier: ^18.2.7
+        version: 18.2.15
 
   packages/llama:
     dependencies:
