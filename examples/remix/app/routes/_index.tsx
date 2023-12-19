@@ -6,19 +6,32 @@ export default function Index() {
     ask: Ask,
   });
   return (
-    <div>
-      <h1>Test</h1>
-      <form onSubmit={handleAsk()}>
-        <input
-          name="question"
-          type="text"
-          placeholder="Ask me anything"
-          value={question}
-          onChange={handleQuestionChange}
+    <div className="p-10 flex flex-col justify-start items-center w-full h-screen">
+      <h1 className="text-4xl font-semibold">@text.yoga/ask</h1>
+      <h2 className="text-2xl font-semibold mt-3 mb-10">remix example</h2>
+      <div className="w-full lg:w-2/3 flex flex-col space-y-5">
+        <form className="w-full flex flex-row space-x-5" onSubmit={handleAsk()}>
+          <input
+            className="border-2 border-slate-700 p-2 flex-grow focus:outline-none"
+            name="question"
+            type="text"
+            placeholder="Ask me anything"
+            value={question}
+            onChange={handleQuestionChange}
+          />
+          <button
+            className="w-36 h-16 border-slate-700 border-2 bg-violet-100 hover:bg-purple-200"
+            type="submit"
+          >
+            Run
+          </button>
+        </form>
+        <textarea
+          className="border-2 border-slate-700 p-2 resize-none focus:outline-none h-56"
+          value={answer}
+          readOnly={true}
         />
-        <button type="submit">Run</button>
-        <div>{answer}</div>
-      </form>
+      </div>
     </div>
   );
 }
