@@ -1,5 +1,6 @@
 import {
   CompletionMessage,
+  IAbortCompletionMessage,
   IGenerateCompletionMessage,
 } from "@text-yoga/ask/dist/types.js";
 import {
@@ -22,17 +23,32 @@ export type AskProps = {
   seed?: bigint;
   maxSeqLen?: number;
 };
+export type Meta = {
+  tokensSec: number;
+  totalTime: number;
+  token: string;
+};
+
 export type UseAskResponse = {
-  question: string;
-  handleQuestionChange: ChangeEventHandler<
-    HTMLInputElement | HTMLTextAreaElement
-  >;
-  handleAsk: (props?: AskProps) => React.FormEventHandler;
-  answer: string;
+  questionValue: string;
+  onQuestionChange: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+  onQuestionSubmit: (props?: AskProps) => React.EventHandler<FormEvent>;
+  answerValue: string;
+  isLoading: boolean;
+  message: string;
+  meta: Meta;
 };
 
 export const useAsk = (props: UseAskProps): UseAskResponse => {
-  const [answer, setAnswer] = useState<string>("");
+  const [answerValue, setAnswer] = useState<string>("");
+  const [isLoading, setLoading] = useState<boolean>(false);
+  const [isAborting, setAborting] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
+  const [meta, setMeta] = useState<Meta>({
+    token: "",
+    tokensSec: 0,
+    totalTime: 0,
+  });
   const [worker, setWorker] = useState<Worker | null>(null);
 
   useEffect(() => {
@@ -51,12 +67,16 @@ export const useAsk = (props: UseAskProps): UseAskResponse => {
   const modelID = "stories15M";
   const tokenizerURL = `http://localhost:5173/tokenizer.json`;
 
-  const [question, setQuestion] = useState("");
+  const [questionValue, setQuestionValue] = useState("");
 
-  const handleAsk = useCallback(
-    (input?: AskProps) => (event: FormEvent) => {
-      event.preventDefault();
-      if (question == "") return;
+  const onQuestionSubmit = (input?: AskProps) => (event: FormEvent) => {
+    event.preventDefault();
+    if (isLoading) {
+      worker?.postMessage({
+        type: "abort",
+      } satisfies IAbortCompletionMessage);
+    } else {
+      if (questionValue == "") return;
       const message: IGenerateCompletionMessage = {
         type: "generate",
         modelID,
@@ -69,30 +89,51 @@ export const useAsk = (props: UseAskProps): UseAskResponse => {
           input?.seed ??
           BigInt(Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)),
         maxSeqLen: input?.maxSeqLen ?? 50,
-        prompt: question,
+        prompt: questionValue,
       };
       worker?.postMessage(message);
-    },
-    [worker],
-  );
-
-  const handleMessage = (event: MessageEvent<CompletionMessage>) => {
-    if (event.data.type == "generating") {
-      const { message, prompt, sentence } = event.data;
-      console.log(`Received message from worker`);
-      if (sentence) setAnswer(sentence);
     }
   };
 
-  const handleQuestionChange = (
+  const handleMessage = (event: MessageEvent<CompletionMessage>) => {
+    if (event.data.type == "generating") {
+      const { message, prompt, sentence, tokensSec, totalTime, token } =
+        event.data;
+      console.log(`Received message from worker`);
+      setMessage(message);
+      if (!isLoading && !isAborting) setLoading(true);
+      if (sentence) {
+        setAnswer(sentence);
+        setMeta({ tokensSec, totalTime, token: token ?? "" });
+      }
+    } else if (event.data.type == "loading") {
+      if (!isAborting) setLoading(true);
+      setMessage(event.data.message);
+    } else if (
+      event.data.type == "done" ||
+      event.data.type == "aborted" ||
+      event.data.type == "error"
+    ) {
+      setLoading(false);
+      setAborting(false);
+      setMessage(event.data.message);
+    } else {
+      setLoading(false);
+    }
+  };
+
+  const onQuestionChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    setQuestion(event.target.value);
+    setQuestionValue(event.target.value);
   };
   return {
-    question,
-    handleQuestionChange,
-    handleAsk,
-    answer,
+    questionValue,
+    onQuestionChange,
+    onQuestionSubmit,
+    answerValue,
+    meta,
+    isLoading,
+    message,
   };
 };

@@ -8,6 +8,7 @@ import {
 } from "@remix-run/react";
 
 import "./app.css";
+import "@fontsource-variable/hanken-grotesk";
 
 export default function App() {
   return (
@@ -18,7 +19,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="font-grotesk">
         <main>
           <Outlet />
         </main>

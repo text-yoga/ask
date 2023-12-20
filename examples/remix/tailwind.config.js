@@ -2,7 +2,11 @@
 export default {
   content: ["./index.html", "./app/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        grotesk: ["'Hanken Grotesk Variable', sans-serif"],
+      },
+    },
   },
   plugins: [],
 };

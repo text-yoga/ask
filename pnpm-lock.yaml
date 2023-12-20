@@ -14,6 +14,9 @@ importers:
 
   examples/remix:
     dependencies:
+      '@fontsource-variable/hanken-grotesk':
+        specifier: ^5.0.19
+        version: 5.0.19
       '@remix-run/node':
         specifier: ^2.4.0
         version: 2.4.0(typescript@5.2.2)
@@ -1242,6 +1245,10 @@ packages:
     resolution: {integrity: sha512-+KpH+QxZU7O4675t3mnkQKcZZg56u+K/Ct2K+N2AZYNVK8kyeo/bI18tI8aPm3tvNNRyTWfj6s5tnGNlcbQRsA==}
     engines: {node: '>=14'}
     dev: true
+
+  /@fontsource-variable/hanken-grotesk@5.0.19:
+    resolution: {integrity: sha512-En5lsBwjJ9fxyRLq72TKlf/65/joUMWJhEEwlH4hPEbL3L2zYeUlj10iUwANkD06Zc3PM54J5lOp1Qjnl6EH2g==}
+    dev: false
 
   /@humanwhocodes/config-array@0.11.11:
     resolution: {integrity: sha512-N2brEuAadi0CcdeMXUkhbZB84eskAc8MEX1By6qEchoVywSgXPIjou4rYsl0V3Hj0ZnuGycGCjdNgockbzeWNA==}
