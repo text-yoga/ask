@@ -76,7 +76,7 @@ export async function generate(data: GenerationProps) {
   try {
     self.postMessage({
       type: "loading",
-      message: "Starting llama2.c",
+      message: "Loading model.",
     } satisfies ILoadingCompletionMessage);
     const model = await Llama2C.getInstance(weightsURL, modelID, tokenizerURL);
 
@@ -103,7 +103,7 @@ export async function generate(data: GenerationProps) {
         if (controller && controller.signal.aborted) {
           self.postMessage({
             type: "aborted",
-            message: "Aborted",
+            message: "Aborted.",
             output: prompt + sentence,
           } satisfies IAbortedCompletionMessage);
           return;
@@ -115,7 +115,7 @@ export async function generate(data: GenerationProps) {
         sentence += token ?? "";
         self.postMessage({
           type: "generating",
-          message: "Generating token",
+          message: "Generating token.",
           token: token,
           sentence: sentence,
           totalTime: performance.now() - startTime,
@@ -128,13 +128,13 @@ export async function generate(data: GenerationProps) {
     }
     self.postMessage({
       type: "done",
-      message: "complete",
+      message: "Done.",
       output: prompt + sentence,
     } satisfies IDoneCompletionMessage);
   } catch (e) {
     self.postMessage({
       type: "error",
-      message: "An unknown error occured",
+      message: `Error: ${e}.`,
     } satisfies IErrorCompletionMessage);
   }
 }
