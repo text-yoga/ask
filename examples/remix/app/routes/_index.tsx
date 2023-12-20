@@ -12,7 +12,7 @@ export default function Index() {
       <div className="w-full lg:w-2/3 flex flex-col space-y-5">
         <form className="w-full flex flex-row space-x-5" onSubmit={handleAsk()}>
           <input
-            className="border-2 border-slate-700 p-2 flex-grow focus:outline-none"
+            className="border-2 border-slate-700 p-2 flex-grow focus:outline-none shadow-[4px_4px_0px]"
             name="question"
             type="text"
             placeholder="Ask me anything"
@@ -20,16 +20,16 @@ export default function Index() {
             onChange={handleQuestionChange}
           />
           <button
-            className="w-36 h-16 border-slate-700 border-2 bg-violet-100 hover:bg-purple-200"
+            className="w-36 h-16 border-slate-700 border-2 bg-violet-100 hover:bg-purple-200 shadow-[4px_4px_0px]"
             type="submit"
           >
             Run
           </button>
         </form>
         <textarea
-          className="border-2 border-slate-700 p-2 resize-none focus:outline-none h-56"
+          className="border-2 border-slate-700 p-2 resize-none focus:outline-none h-56 shadow-[4px_4px_0px]"
           value={answer}
-          readOnly={true}
+          // readOnly={true}
         />
       </div>
     </div>
