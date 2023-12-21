@@ -2,11 +2,9 @@ use crate::model::{Cache, Config, Llama};
 use byteorder::{LittleEndian, ReadBytesExt};
 use candle::{DType, Device, IndexOp, Result, Shape, Tensor};
 use candle_nn::VarBuilder;
-use candle_transformers::generation::LogitsProcessor;
 use serde::{Deserialize, Serialize};
 use tokenizers::Tokenizer;
 use wasm_bindgen::prelude::*;
-use yew_agent::{HandlerId, Public, WorkerLink};
 
 #[wasm_bindgen]
 extern "C" {
@@ -54,59 +52,6 @@ pub struct Model {
     pub config: Config,
     pub llama: Llama,
     pub tokenizer: Tokenizer,
-}
-
-impl Model {
-    fn run(
-        &self,
-        link: &WorkerLink<Worker>,
-        id: HandlerId,
-        temp: f64,
-        top_p: f64,
-        prompt: String,
-    ) -> Result<()> {
-        let dev = Device::Cpu;
-        let temp = if temp <= 0. { None } else { Some(temp) };
-        let top_p = if top_p <= 0. || top_p >= 1.0 {
-            None
-        } else {
-            Some(top_p)
-        };
-        console_log!("temp: {temp:?} top_p: {top_p:?} prompt: {prompt}");
-        let mut logits_processor = LogitsProcessor::new(299792458, temp, top_p);
-        let mut index_pos = 0;
-        let mut tokens = self
-            .tokenizer
-            .encode(prompt.to_string(), true)
-            .map_err(|m| candle::Error::Msg(m.to_string()))?
-            .get_ids()
-            .to_vec();
-        link.respond(id, Ok(WorkerOutput::Generated(prompt)));
-
-        for index in 0.. {
-            if tokens.len() >= self.config.seq_len {
-                break;
-            }
-            let context_size = if self.cache.use_kv_cache && index > 0 {
-                1
-            } else {
-                tokens.len()
-            };
-            let ctxt = &tokens[tokens.len().saturating_sub(context_size)..];
-            let input = Tensor::new(ctxt, &dev)?.unsqueeze(0)?;
-            let logits = self.llama.forward(&input, index_pos)?;
-            let logits = logits.squeeze(0)?;
-            index_pos += ctxt.len();
-
-            let next_token = logits_processor.sample(&logits)?;
-            tokens.push(next_token);
-            if let Some(text) = self.tokenizer.id_to_token(next_token) {
-                let text = text.replace('▁', " ").replace("<0x0A>", "\n");
-                link.respond(id, Ok(WorkerOutput::Generated(text)));
-            }
-        }
-        Ok(())
-    }
 }
 
 impl Config {
@@ -266,11 +211,6 @@ impl Model {
     }
 }
 
-pub struct Worker {
-    link: WorkerLink<Self>,
-    model: Option<Model>,
-}
-
 #[derive(Serialize, Deserialize)]
 pub enum WorkerInput {
     ModelData(ModelData),
@@ -282,55 +222,4 @@ pub enum WorkerOutput {
     Generated(String),
     GenerationDone(std::result::Result<(), String>),
     WeightsLoaded,
-}
-
-impl yew_agent::Worker for Worker {
-    type Input = WorkerInput;
-    type Message = ();
-    type Output = std::result::Result<WorkerOutput, String>;
-    type Reach = Public<Self>;
-
-    fn create(link: WorkerLink<Self>) -> Self {
-        Self { link, model: None }
-    }
-
-    fn update(&mut self, _msg: Self::Message) {
-        // no messaging
-    }
-
-    fn handle_input(&mut self, msg: Self::Input, id: HandlerId) {
-        let output = match msg {
-            WorkerInput::ModelData(md) => match Model::load(md) {
-                Ok(model) => {
-                    self.model = Some(model);
-                    Ok(WorkerOutput::WeightsLoaded)
-                }
-                Err(err) => Err(format!("model creation error {err:?}")),
-            },
-            WorkerInput::Run(temp, top_p, prompt) => match &mut self.model {
-                None => Err("model has not been set yet".to_string()),
-                Some(model) => {
-                    {
-                        let mut cache = model.cache.kvs.lock().unwrap();
-                        for elem in cache.iter_mut() {
-                            *elem = None
-                        }
-                    }
-                    let result = model
-                        .run(&self.link, id, temp, top_p, prompt)
-                        .map_err(|e| e.to_string());
-                    Ok(WorkerOutput::GenerationDone(result))
-                }
-            },
-        };
-        self.link.respond(id, output);
-    }
-
-    fn name_of_resource() -> &'static str {
-        "worker.js"
-    }
-
-    fn resource_path_is_relative() -> bool {
-        true
-    }
 }

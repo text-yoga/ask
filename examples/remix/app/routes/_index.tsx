@@ -15,8 +15,7 @@ export default function Index() {
   });
   return (
     <div className="p-10 flex flex-col justify-start items-center w-full h-screen">
-      <h1 className="text-4xl font-semibold">@text.yoga/ask</h1>
-      <h2 className="text-2xl font-semibold mt-3 mb-10">remix example</h2>
+      <h1 className="text-4xl font-semibold mb-10">@text.yoga/ask</h1>
       <div className="w-full lg:w-2/3 flex flex-col space-y-5">
         <form
           className="w-full flex flex-row space-x-5"
