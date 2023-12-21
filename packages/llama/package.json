@@ -7,8 +7,8 @@
   ],
   "exports": {
     ".": {
-      "import": "./dist/m.js",
-      "types": "./dist/m.d.ts"
+      "import": "./dist/m2.js",
+      "types": "./dist/m2.d.ts"
     }
   },
   "scripts": {

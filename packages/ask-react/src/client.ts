@@ -63,9 +63,9 @@ export const useAsk = (props: UseAskProps): UseAskResponse => {
     };
   }, []);
 
-  const weightsURL = `http://localhost:5173/model.bin`;
+  const weightsURL = `http://localhost:5173/model2.gguf`;
   const modelID = "stories15M";
-  const tokenizerURL = `http://localhost:5173/tokenizer.json`;
+  const tokenizerURL = `http://localhost:5173/tokenizer2.json`;
 
   const [questionValue, setQuestionValue] = useState("");
 
